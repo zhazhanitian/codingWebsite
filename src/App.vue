@@ -1,30 +1,24 @@
 <template>
-  <div id="app" class="d-flex flex-column h-100">
-    <nav-bar />
-    <div class="container flex-grow-1">
-      <error />
-      <div class="mt-5">
-        <router-view />
-      </div>
-    </div>
-    <footer class="bg-light text-center p-3">
-      <div class="logo"></div>
-      <p>
-        Sample project provided by
-        <a href="https://auth0.com">Auth0</a>
-      </p>
-    </footer>
+  <div id="app">
+    <router-view />
   </div>
 </template>
 
-<script>
-import NavBar from "./components/NavBar";
-import Error from "./components/Error";
+<style lang="scss">
+#app {
+  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+  background-color: #fff;
+}
 
-export default {
-  components: {
-    NavBar,
-    Error
-  }
-};
-</script>
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+</style>

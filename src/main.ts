@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
-import store from '@/store'
 import { createAuth0 } from '@auth0/auth0-vue'
 import ElementPlus from 'element-plus'
-import authConfig from '@/config/auth_config'
+import store from './store'
+import authConfig from './config/auth_config'
 import { createRouter } from './router'
 import App from './App.vue'
 

@@ -24,7 +24,7 @@ module.exports = {
     'no-console': process.env.VITE_APP_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.VITE_APP_ENV === 'production' ? 'error' : 'off',
     'import/no-extraneous-dependencies': [2, { devDependencies: true }],
-    'import/no-unresolved': [2, { ignore: ['antd-mobile'] }],
+    'import/no-unresolved': [2, { ignore: ['antd-mobile', '^@/'] }],
     'import/no-absolute-path': [0], // 关闭不能使用绝对路径导入模块
     'import/extensions': [
       'error',
