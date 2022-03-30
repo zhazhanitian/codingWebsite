@@ -1,4 +1,4 @@
-import { createRouter as createVueRouter, createWebHashHistory, Router } from 'vue-router'
+import { createRouter as createVueRouter, createWebHistory, Router } from 'vue-router'
 import { createAuthGuard } from '@auth0/auth0-vue'
 import { App } from 'vue'
 import Layout from '@/components/layout/index.vue'
@@ -32,7 +32,7 @@ export function createRouter(app: App): Router {
         beforeEnter: createAuthGuard(app)
       }
     ],
-    history: createWebHashHistory()
+    history: createWebHistory()
   })
 }
 

@@ -99,6 +99,7 @@ export default defineComponent({
         text-overflow: ellipsis;
         white-space: nowrap;
         font-weight: 500;
+        margin-top: 6px;
 
         &:last-child {
           font-size: 10px;
@@ -132,24 +133,19 @@ export default defineComponent({
   border-radius: 8px;
   box-shadow: -5px 0 10px rgba(0, 0, 0, 0.1), 0 0 0 rgba(0, 0, 0, 0.1),
     0 5px 10px rgba(0, 0, 0, 0.1), 5px 0 10px rgba(0, 0, 0, 0.1);
-  padding: 8px 0;
   z-index: 2111;
-
-  .drop__item--box {
-    padding: 8px 18px;
-    font-size: 14px;
-    border: none;
-
-    &:hover {
-      background-color: #1a7b9930;
-    }
-  }
 
   .el-dropdown-menu__item {
     border: none !important;
     cursor: pointer;
     user-select: none;
     outline: none;
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    &:hover {
+      background-color: #1a7b9930;
+    }
   }
 
   .drop__item--icon {

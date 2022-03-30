@@ -34,6 +34,8 @@ export default defineComponent({
   width: 100%;
   box-shadow: 0 2px 3px rgb(18 18 18 / 5%), 0 0 0 1px rgb(18 18 18 / 5%);
   padding-top: 0px;
+  background-color: #fff;
+  z-index: 200;
 
   .nav__content {
     width: 1180px;

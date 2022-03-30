@@ -3,7 +3,10 @@
     <div class="nav__title">Nimbus</div>
     <span class="sign__up" v-if="!isAuthenticated && !isLoading" @click="login">Login</span>
     <span class="log__out" v-if="isAuthenticated && !isLoading" @click="logout">Log out</span>
-    <span class="enter__btn" v-if="isAuthenticated && !isLoading" @click="$router.push('/home')"
+    <span
+      class="enter__btn"
+      v-if="isAuthenticated && !isLoading"
+      @click="$router.push('/environment/index')"
       >Workspace</span
     >
   </div>
