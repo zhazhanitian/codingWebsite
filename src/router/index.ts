@@ -1,6 +1,7 @@
 import { createRouter as createVueRouter, createWebHashHistory, Router } from 'vue-router'
 import { createAuthGuard } from '@auth0/auth0-vue'
 import { App } from 'vue'
+import Layout from '@/components/layout/index.vue'
 
 export function createRouter(app: App): Router {
   return createVueRouter({
@@ -8,13 +9,21 @@ export function createRouter(app: App): Router {
       {
         path: '/',
         alias: '/index',
-        name: 'index',
+        name: 'Index',
         component: () => import('@/views/index/index.vue')
       },
       {
-        path: '/home',
-        name: 'home',
-        component: () => import('@/views/Entry.vue')
+        path: '/environment',
+        name: 'Environment',
+        component: Layout,
+        beforeEnter: createAuthGuard(app),
+        children: [
+          {
+            path: '/environment/index',
+            name: 'EnvironmentIndex',
+            component: () => import('@/views/environment/index/index.vue')
+          }
+        ]
       },
       {
         path: '/profile',

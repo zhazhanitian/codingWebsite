@@ -1,17 +1,35 @@
 <template>
   <div class="index__nav--box">
     <div class="nav__title">Nimbus</div>
-    <span class="sign__in">Sign In</span>
-    <span class="sign__up">Sign Up</span>
+    <span class="sign__up" v-if="!isAuthenticated && !isLoading" @click="login">Login</span>
+    <span class="log__out" v-if="isAuthenticated && !isLoading" @click="logout">Log out</span>
+    <span class="enter__btn" v-if="isAuthenticated && !isLoading" @click="$router.push('/home')"
+      >Workspace</span
+    >
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useAuth0 } from '@auth0/auth0-vue'
 
 export default defineComponent({
+  name: 'IndexNavBar',
   setup() {
-    return {}
+    const { isAuthenticated, isLoading, user, loginWithRedirect, logout } = useAuth0()
+    return {
+      isAuthenticated,
+      isLoading,
+      user,
+      login: () => {
+        loginWithRedirect()
+      },
+      logout: () => {
+        logout({
+          returnTo: window.location.origin
+        })
+      }
+    }
   }
 })
 </script>
@@ -34,7 +52,7 @@ export default defineComponent({
     flex: 1;
   }
 
-  .sign__in {
+  .log__out {
     width: 60px;
     color: #131415d9;
     font-size: 14px;
@@ -44,7 +62,8 @@ export default defineComponent({
     margin-right: 12px;
   }
 
-  .sign__up {
+  .sign__up,
+  .enter__btn {
     width: 84px;
     height: 32px;
     line-height: 32px;
@@ -56,6 +75,10 @@ export default defineComponent({
     color: #fff;
     font-weight: 500;
     text-align: center;
+  }
+
+  .enter__btn {
+    width: 100px;
   }
 }
 </style>
