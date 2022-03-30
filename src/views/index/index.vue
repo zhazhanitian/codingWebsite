@@ -1,26 +1,25 @@
 <template>
-  <div>
-    <hero />
-    <hr />
-    <home-content />
-  </div>
+  <nav-bar></nav-bar>
 </template>
 
-<script>
-import Hero from '@/components/Hero.vue'
-import HomeContent from '@/components/HomeContent.vue'
+<script lang="ts">
+import { useRouter } from 'vue-router'
+import { defineComponent, onMounted } from 'vue'
+import NavBar from './components/navBar/index.vue'
 
-export default {
-  name: 'home',
-  components: {
-    Hero,
-    HomeContent
+export default defineComponent({
+  components: { NavBar },
+  setup() {
+    const router = useRouter()
+
+    onMounted(() => {
+      console.log('router', router)
+    })
   }
-}
+})
 </script>
 
-<style lang="css" scoped>
-.next-steps .fa-link {
-  margin-right: 5px;
+<style lang="scss" scoped>
+.app__index--page {
 }
 </style>

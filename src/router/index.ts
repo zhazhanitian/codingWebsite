@@ -8,8 +8,13 @@ export function createRouter(app: App): Router {
       {
         path: '/',
         alias: '/index',
-        name: 'home',
+        name: 'index',
         component: () => import('@/views/index/index.vue')
+      },
+      {
+        path: '/home',
+        name: 'home',
+        component: () => import('@/views/Entry.vue')
       },
       {
         path: '/profile',
