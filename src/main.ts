@@ -1,12 +1,12 @@
-import App from "./App.vue";
-import { createApp } from "vue";
-import { createRouter } from "./router";
+import { createApp } from 'vue'
 import store from '@/store'
-import { createAuth0 } from "@auth0/auth0-vue";
+import { createAuth0 } from '@auth0/auth0-vue'
 import ElementPlus from 'element-plus'
-import { domain, clientId as client_id } from "@/config/auth_config.json";
+import authConfig from '@/config/auth_config'
+import { createRouter } from './router'
+import App from './App.vue'
 
-const app = createApp(App);
+const app = createApp(App)
 
 app
   .use(createRouter(app))
@@ -14,9 +14,8 @@ app
   .use(ElementPlus)
   .use(
     createAuth0({
-      domain,
-      client_id,
-      redirect_uri: window.location.origin,
+      ...authConfig,
+      redirect_uri: window.location.origin
     })
   )
-  .mount("#app");
+  .mount('#app')

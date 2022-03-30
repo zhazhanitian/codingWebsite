@@ -7,20 +7,20 @@
 </template>
 
 <script>
-import Hero from "../components/Hero";
-import HomeContent from "../components/HomeContent";
+import Hero from '../components/Hero.vue'
+import HomeContent from '../components/HomeContent.vue'
 
 export default {
-  name: "home",
+  name: 'home',
   components: {
     Hero,
-    HomeContent,
-  },
-};
+    HomeContent
+  }
+}
 </script>
 
 <style lang="css" scoped>
 .next-steps .fa-link {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 </style>

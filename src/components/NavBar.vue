@@ -23,11 +23,9 @@
           </ul>
           <ul class="navbar-nav d-none d-md-block">
             <li v-if="!isAuthenticated && !isLoading" class="nav-item">
-              <button
-                id="qsLoginBtn"
-                class="btn btn-primary btn-margin"
-                @click.prevent="login"
-              >Login</button>
+              <button id="qsLoginBtn" class="btn btn-primary btn-margin" @click.prevent="login">
+                Login
+              </button>
             </li>
 
             <li class="nav-item dropdown" v-if="isAuthenticated">
@@ -60,11 +58,7 @@
             <button id="qsLoginBtn" class="btn btn-primary btn-block" @click="login">Log in</button>
           </ul>
 
-          <ul
-            id="mobileAuthNavBar"
-            class="navbar-nav d-md-none d-flex"
-            v-if="isAuthenticated"
-          >
+          <ul id="mobileAuthNavBar" class="navbar-nav d-md-none d-flex" v-if="isAuthenticated">
             <li class="nav-item">
               <span class="user-info">
                 <img
@@ -93,27 +87,27 @@
 </template>
 
 <script>
-import { useAuth0 } from '@auth0/auth0-vue';
+import { useAuth0 } from '@auth0/auth0-vue'
 
 export default {
-  name: "NavBar",
+  name: 'NavBar',
   setup() {
-    const { isAuthenticated, isLoading, user, loginWithRedirect, logout } = useAuth0();
+    const { isAuthenticated, isLoading, user, loginWithRedirect, logout } = useAuth0()
     return {
       isAuthenticated,
       isLoading,
       user,
       login: () => {
-        loginWithRedirect();
+        loginWithRedirect()
       },
       logout: () => {
         logout({
           returnTo: window.location.origin
-        });
+        })
       }
     }
   }
-};
+}
 </script>
 
 <style>
