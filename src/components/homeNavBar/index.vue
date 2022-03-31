@@ -3,10 +3,26 @@
     <nav class="nav__content">
       <div class="nav__left">
         <img class="logo__name" src="@/assets/environment/nimbus__logo.png" />
-        <span class="menu__btn active">Environments</span>
-        <span class="menu__btn">Team</span>
-        <span class="menu__btn">My Account</span>
-        <span class="menu__btn">Billing</span>
+        <span
+          @click="$router.push('/environment/index')"
+          :class="['menu__btn', menuType === 1 && 'active']"
+          >Environments</span
+        >
+        <span
+          @click="$router.push('/team/index')"
+          :class="['menu__btn', menuType === 2 && 'active']"
+          >Team</span
+        >
+        <span
+          @click="$router.push('/myAccount/index')"
+          :class="['menu__btn', menuType === 3 && 'active']"
+          >My Account</span
+        >
+        <span
+          @click="$router.push('/billing/index')"
+          :class="['menu__btn', menuType === 4 && 'active']"
+          >Billing</span
+        >
       </div>
       <div class="nav__right">
         <div class="side__line"></div>
@@ -17,12 +33,30 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import ProfileCard from '@/components/profileCard/index.vue'
 
 export default defineComponent({
   components: { ProfileCard },
-  setup() {}
+
+  setup() {
+    const route = useRoute()
+
+    const menuType = computed(() => {
+      const { path } = route
+      let flag = 1
+      if (path.match(/^\/environment.*/)) flag = 1
+      if (path.match(/^\/team.*/)) flag = 2
+      if (path.match(/^\/myAccount.*/)) flag = 3
+      if (path.match(/^\/billing.*/)) flag = 4
+      return flag
+    })
+
+    return {
+      menuType
+    }
+  }
 })
 </script>
 

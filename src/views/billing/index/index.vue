@@ -1,6 +1,16 @@
 <template>
   <el-row :gutter="24" class="sear__box">
-    <el-col :span="12"></el-col>
+    <el-col :span="12">
+      <el-input
+        class="search__input"
+        clearable
+        v-model="machineName"
+        placeholder="search name"
+      ></el-input>
+      <el-button>
+        <el-icon class="search__icon"> <search /></el-icon>Search
+      </el-button>
+    </el-col>
     <el-col :span="12" style="text-align: right">
       <el-button @click="showDetail()">
         <el-icon class="search__icon"> <plus /></el-icon>Add New
@@ -48,15 +58,16 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, nextTick } from 'vue'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Plus } from '@element-plus/icons-vue'
+import { Search, Plus } from '@element-plus/icons-vue'
 import { EnvironmentItem } from '@/interface/environment'
 import { environmentList } from '@/mock/environment'
 import EditDetail from './components/editDetail/index.vue'
 
 export default defineComponent({
-  components: { Plus, EditDetail },
+  components: { Search, Plus, EditDetail },
 
   setup() {
+    const machineName = ref('')
     const list: EnvironmentItem[] = reactive(environmentList)
 
     // 粗略计算运行天数
@@ -93,6 +104,7 @@ export default defineComponent({
     }
 
     return {
+      machineName,
       list,
       detailDrawer,
       detailRef,
@@ -106,6 +118,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.sear__box {
+  margin-bottom: 30px;
+
+  .search__input {
+    display: inline-block;
+    width: 200px;
+    margin-right: 10px;
+  }
+
+  .search__icon {
+    margin-right: 4px;
+  }
+}
+
 .environ__item {
   padding: 24px;
   background-color: #fff;
