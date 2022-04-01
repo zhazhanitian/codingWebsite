@@ -1,179 +1,190 @@
 <template>
-  <el-row :gutter="24" class="sear__box">
-    <el-col :span="12">
-      <el-input
-        class="search__input"
-        clearable
-        v-model="machineName"
-        placeholder="search name"
-      ></el-input>
-      <el-button>
-        <el-icon class="search__icon"> <search /></el-icon>Search
-      </el-button>
-    </el-col>
-    <el-col :span="12" style="text-align: right">
-      <el-button @click="showDetail()">
-        <el-icon class="search__icon"> <plus /></el-icon>Add New
-      </el-button>
-    </el-col>
-  </el-row>
-
-  <div class="environ__item" v-for="item in list" :key="item.id" @click="showDetail(item)">
-    <el-row :gutter="24">
-      <el-col :span="10">
-        <div class="title__txt">{{ item.title }}</div>
-        <span class="item__tags">{{ item.core }}</span>
-        <span class="item__tags">{{ item.ram }}</span>
-        <span class="item__tags">{{ item.dueTo }}</span>
-        <span class="item__tags">{{ item.center }}</span>
-      </el-col>
-      <el-col :span="14" style="text-align: right">
-        <div class="count__item">
-          <div class="count">{{ item.owner }}</div>
-          <div class="tips">owner</div>
-        </div>
-        <div class="count__item">
-          <div class="count">{{ item.state }}</div>
-          <div class="tips">state</div>
-        </div>
-        <div class="count__item">
-          <div class="count">{{ calculationTime(item.startAt) }}d</div>
-          <div class="tips">run time</div>
-        </div>
-      </el-col>
-    </el-row>
+  <div class="total__cover">
+    <div class="info__item">
+      <div class="title">$431.12</div>
+      <div class="desc">Remaining balance</div>
+    </div>
+    <div class="info__item">
+      <div class="title">$18721</div>
+      <div class="desc">Cumulative recharge</div>
+    </div>
+    <div class="info__item">
+      <div class="title">18</div>
+      <div class="desc">Total machines</div>
+    </div>
+    <div class="info__item">
+      <div class="title">88.7%</div>
+      <div class="desc">Utilization rate</div>
+    </div>
   </div>
 
-  <el-drawer v-model="detailDrawer" :before-close="beforeCloseDrawer">
+  <div class="main__box">
+    <el-row :gutter="24" class="header__line">
+      <el-col :span="12">
+        <span class="header__title">Invoice hisotry</span>
+      </el-col>
+      <el-col :span="12" style="text-align: right">
+        <el-button @click="topUpMoney">Top Up</el-button>
+      </el-col>
+    </el-row>
+    <div class="history__item item__head">
+      <div class="time">Date</div>
+      <div class="type">Type</div>
+      <div class="money">Amount</div>
+      <div class="opera"></div>
+    </div>
+    <div class="history__item" v-for="item in list" :key="item.id">
+      <div class="time">{{ dateFormatTemp(item.date) }}</div>
+      <div class="type">{{ item.type }}</div>
+      <div class="money">$ {{ item.money }}</div>
+      <div class="opera">
+        <el-icon class="detail__btn" @click="showDetail(item)"><arrow-right-bold /></el-icon>
+      </div>
+    </div>
+  </div>
+
+  <el-drawer v-model="detailDrawer">
     <template #title>
-      <div class="edit__drawer--title">Environment</div>
+      <div class="edit__drawer--title">Invoice Details</div>
     </template>
-    <template #footer>
-      <el-button @click="saveEdit">Save</el-button>
-    </template>
-    <edit-detail ref="detailRef"></edit-detail>
+    <invoice-detail ref="invoiceDetailRef"></invoice-detail>
   </el-drawer>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref, nextTick } from 'vue'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Search, Plus } from '@element-plus/icons-vue'
-import { EnvironmentItem } from '@/interface/environment'
-import { environmentList } from '@/mock/environment'
-import EditDetail from './components/editDetail/index.vue'
+import { ArrowRightBold } from '@element-plus/icons-vue'
+import { InvoiceItem } from '@/interface/billing'
+import { invoiceList } from '@/mock/billing'
+import { dateFormatTemp } from '@/utils/index'
+import { ElMessage } from 'element-plus'
+import InvoiceDetail from './components/invoiceDetail/index.vue'
 
 export default defineComponent({
-  components: { Search, Plus, EditDetail },
+  components: { InvoiceDetail, ArrowRightBold },
 
   setup() {
-    const machineName = ref('')
-    const list: EnvironmentItem[] = reactive(environmentList)
-
-    // 粗略计算运行天数
-    const calculationTime = (time: string): Number => {
-      const value = Date.now() - new Date(time).getTime()
-      return Math.floor(value / (24 * 3600 * 1000))
-    }
+    const list: InvoiceItem[] = reactive(invoiceList)
 
     const detailDrawer = ref(false)
-    const detailRef = ref()
-    // 关闭编辑弹窗前重置form表单
-    const beforeCloseDrawer = (done: any): void => {
-      detailRef.value.resetForm()
-      done()
-    }
-    // 展开编辑
-    const showDetail = async (item: EnvironmentItem | undefined) => {
+    const invoiceDetailRef = ref()
+    // 展开详情
+    const showDetail = async (item: InvoiceItem | undefined) => {
       detailDrawer.value = true
       await nextTick()
-      if (item && item.id) detailRef.value.resetForm(item)
-      else detailRef.value.resetForm()
+      invoiceDetailRef.value.resetForm(item)
     }
-    // save
-    const saveEdit = (): void => {
-      const info: EnvironmentItem = detailRef.value.form
-      if (!info.id) {
-        info.id = list.length + 1
-        list.unshift(info)
-      } else {
-        const index = list.findIndex((i: EnvironmentItem) => i.id === info.id)
-        list.splice(index, 1, { ...info })
-      }
-      detailDrawer.value = false
+
+    const topUpMoney = () => {
+      ElMessage.info('The top up of money function is being enabled!')
     }
 
     return {
-      machineName,
       list,
       detailDrawer,
-      detailRef,
-      calculationTime,
+      invoiceDetailRef,
+      topUpMoney,
       showDetail,
-      saveEdit,
-      beforeCloseDrawer
+      dateFormatTemp
     }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-.sear__box {
-  margin-bottom: 30px;
-
-  .search__input {
-    display: inline-block;
-    width: 200px;
-    margin-right: 10px;
-  }
-
-  .search__icon {
-    margin-right: 4px;
-  }
-}
-
-.environ__item {
-  padding: 24px;
+.total__cover {
+  padding: 35px 0;
   background-color: #fff;
   border-radius: 6px;
-  cursor: pointer;
-  margin-top: 18px;
+  display: flex;
 
-  .title__txt {
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 9px;
-  }
-
-  .item__tags {
-    display: inline-block;
-    border-radius: 3px;
-    height: 24px;
-    line-height: 24px;
-    box-sizing: border-box;
-    padding: 0 7px;
-    margin-right: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    background-color: #eff2f6;
-  }
-
-  .count__item {
-    display: inline-block;
-    margin-left: 22px;
+  .info__item {
+    width: 25%;
+    border-right: 2px solid #f5f5f5;
     text-align: center;
 
-    .count {
-      font-size: 22px;
-      color: #101d37;
+    &:nth-last-child(1) {
+      border-right: none;
+    }
+
+    .title {
+      height: 40px;
+      font-size: 24px;
+      color: #3c4858;
       font-weight: 500;
     }
 
-    .tips {
-      color: #303133;
-      font-size: 16px;
-      margin-top: 5px;
+    .desc {
+      font-size: 14px;
+      color: #8392a7;
     }
+  }
+}
+
+.main__box {
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 6px;
+  margin-top: 18px;
+
+  .header__line {
+    border-bottom: 1px solid #f5f5f5;
+    padding-bottom: 20px;
+  }
+
+  .header__title {
+    color: #354052;
+    font-size: 16px;
+    font-weight: 500;
+    height: 32px;
+    line-height: 32px;
+    display: inline-block;
+  }
+
+  .history__item {
+    border-bottom: 1px solid #f5f5f5;
+    padding: 20px 15px;
+    display: flex;
+    width: 100%;
+
+    & > div {
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .time {
+      flex: 1;
+    }
+
+    .type {
+      width: 220px;
+    }
+
+    .money {
+      width: 140px;
+    }
+
+    .opera {
+      width: 100px;
+      justify-content: end;
+      padding-right: 10px;
+
+      .detail__btn {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .item__head {
+    padding: 12px 15px;
+    background-color: #eff2f64d;
+    font-weight: 600;
+    color: #666;
+    margin-top: 25px;
   }
 }
 

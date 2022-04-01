@@ -38,7 +38,7 @@ import {
 } from '@/config/environment'
 
 export default defineComponent({
-  name: 'EnvironmentEdit',
+  name: 'TeamEdit',
 
   setup() {
     const form = ref<EnvironmentItem>(Object.assign({} as EnvironmentItem, defaultEnvironmentItem))
