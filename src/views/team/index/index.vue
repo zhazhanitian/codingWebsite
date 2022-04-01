@@ -12,7 +12,7 @@
       </el-button>
     </el-col>
     <el-col :span="12" style="text-align: right">
-      <el-button @click="showDetail()">
+      <el-button>
         <el-icon class="search__icon"> <plus /></el-icon>Add User
       </el-button>
     </el-col>
