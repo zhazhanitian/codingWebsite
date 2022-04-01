@@ -12,9 +12,7 @@
       </el-button>
     </el-col>
     <el-col :span="12" style="text-align: right">
-      <el-button>
-        <el-icon class="search__icon"> <plus /></el-icon>Add User
-      </el-button>
+      <el-button @click="showInvite">Invite</el-button>
     </el-col>
   </el-row>
 
@@ -42,65 +40,66 @@
         </el-select>
       </div>
       <div class="opera">
-        <el-button class="btn__delete" type="danger" circle
-          ><el-icon class="search__icon"> <delete /></el-icon
-        ></el-button>
+        <el-popconfirm @confirm="removeUser(item)" title="Are you sure to delete this?">
+          <template #reference>
+            <el-button class="btn__delete" type="danger" circle
+              ><el-icon class="search__icon"> <delete /></el-icon
+            ></el-button>
+          </template>
+        </el-popconfirm>
       </div>
     </div>
   </div>
 
   <el-drawer v-model="detailDrawer" :before-close="beforeCloseDrawer">
     <template #title>
-      <div class="edit__drawer--title">Environment</div>
+      <div class="edit__drawer--title">Invite New User</div>
     </template>
     <template #footer>
-      <el-button @click="saveEdit">Save</el-button>
+      <el-button @click="saveEdit">Invite</el-button>
     </template>
     <edit-detail ref="detailRef"></edit-detail>
   </el-drawer>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, nextTick } from 'vue'
+import { defineComponent, reactive, ref } from 'vue'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Search, Plus, Delete } from '@element-plus/icons-vue'
+import { Search, Delete } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { TeamItem } from '@/interface/team'
 import { teamList } from '@/mock/team'
 import { roleList } from '@/config/team'
 import EditDetail from './components/editDetail/index.vue'
 
 export default defineComponent({
-  components: { Search, Plus, Delete, EditDetail },
+  components: { Search, Delete, EditDetail },
 
   setup() {
     const machineName = ref('')
-    const list: TeamItem[] = reactive(teamList)
+    const list: TeamItem[] = reactive([...teamList])
 
     const detailDrawer = ref(false)
     const detailRef = ref()
-    // 关闭编辑弹窗前重置form表单
+    // 关闭邀请用户弹窗前重置form表单
     const beforeCloseDrawer = (done: any): void => {
       detailRef.value.resetForm()
       done()
     }
-    // 展开编辑
-    const showDetail = async (item: TeamItem | undefined) => {
+    // 展开邀请用户弹出
+    const showInvite = () => {
       detailDrawer.value = true
-      await nextTick()
-      if (item && item.id) detailRef.value.resetForm(item)
-      else detailRef.value.resetForm()
     }
-    // save
+    // 确认邀请
     const saveEdit = (): void => {
-      const info: TeamItem = detailRef.value.form
-      if (!info.id) {
-        info.id = list.length + 1
-        list.unshift(info)
-      } else {
-        const index = list.findIndex((i: TeamItem) => i.id === info.id)
-        list.splice(index, 1, { ...info })
-      }
       detailDrawer.value = false
+      ElMessage.success(`Invitation succeeded, waiting for user's confirmation to join!`)
+    }
+
+    // 移除用户
+    const removeUser = (item: TeamItem) => {
+      const index = list.findIndex((i: TeamItem) => i.id === item.id)
+      list.splice(index, 1)
     }
 
     return {
@@ -109,8 +108,9 @@ export default defineComponent({
       detailDrawer,
       detailRef,
       roleList,
-      showDetail,
+      showInvite,
       saveEdit,
+      removeUser,
       beforeCloseDrawer
     }
   }
@@ -138,6 +138,7 @@ export default defineComponent({
   border-radius: 6px;
   cursor: pointer;
   margin-top: 18px;
+  min-height: 400px;
 
   .team__item {
     border-bottom: 1px solid #f5f5f5;

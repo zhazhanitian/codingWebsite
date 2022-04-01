@@ -1,58 +1,33 @@
 <template>
   <el-form :model="form" label-width="120px" label-position="top">
-    <el-form-item label="Name" prop="title" class="form__item">
-      <el-input v-model.trim="form.title" maxlength="15" />
+    <el-form-item label="Nimbus member or Email address" prop="account" class="form__item">
+      <el-input v-model.trim="form.title" maxlength="25" />
     </el-form-item>
-    <el-form-item label="Core CPU" prop="core" class="form__item">
-      <el-select v-model="form.core" class="form__select">
-        <el-option v-for="item in coreCpuList" :key="item" :label="item" :value="item" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="ARM" prop="ram" class="form__item">
-      <el-select v-model="form.ram" class="form__select">
-        <el-option v-for="item in ramList" :key="item" :label="item" :value="item" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Band Width" prop="dueTo" class="form__item">
-      <el-select v-model="form.dueTo" class="form__select">
-        <el-option v-for="item in dueToList" :key="item" :label="item" :value="item" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="System" prop="center" class="form__item">
-      <el-select v-model="form.center" class="form__select">
-        <el-option v-for="item in centerList" :key="item" :label="item" :value="item" />
+    <el-form-item label="Choose a role permission" prop="role" class="form__item">
+      <el-select v-model="form.role" class="form__select">
+        <el-option v-for="r in roleList" :key="r" :label="r" :value="r"></el-option>
       </el-select>
     </el-form-item>
   </el-form>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import { EnvironmentItem } from '@/interface/environment'
-import {
-  coreCpuList,
-  ramList,
-  dueToList,
-  centerList,
-  defaultEnvironmentItem
-} from '@/config/environment'
+import { defineComponent, reactive } from 'vue'
+import { roleList } from '@/config/team'
 
 export default defineComponent({
   name: 'TeamEdit',
 
   setup() {
-    const form = ref<EnvironmentItem>(Object.assign({} as EnvironmentItem, defaultEnvironmentItem))
+    const form = reactive({ account: '', email: '' })
 
-    const resetForm = (info: EnvironmentItem | undefined) => {
-      form.value = { ...(info || defaultEnvironmentItem) }
+    const resetForm = () => {
+      Object.assign(form, { account: '', email: '' })
     }
 
     return {
       form,
-      coreCpuList,
-      ramList,
-      dueToList,
-      centerList,
+      roleList,
       resetForm
     }
   }
