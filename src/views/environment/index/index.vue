@@ -8,8 +8,8 @@
     </el-col>
   </el-row>
 
-  <div class="environ__item" v-for="item in list" :key="item.id" @click="showDetail(item)">
-    <el-row :gutter="24">
+  <div class="environ__item" v-for="item in list" :key="item.id">
+    <el-row :gutter="24" @click="showDetail(item)">
       <el-col :span="10">
         <div class="title__txt">{{ item.title }}</div>
         <span class="item__tags">{{ item.core }}</span>
@@ -32,6 +32,16 @@
         </div>
       </el-col>
     </el-row>
+    <div class="environ__opera">
+      <el-popconfirm @confirm="removeEnvironment(item)" title="Are you sure to delete this?">
+        <template #reference>
+          <span class="item__btn">Delete</span>
+        </template>
+      </el-popconfirm>
+      <span v-if="item.state === 'Normal'" class="item__btn" @click="reportForRepair(item)"
+        >Fault</span
+      >
+    </div>
   </div>
 
   <el-drawer v-model="detailDrawer" :before-close="beforeCloseDrawer">
@@ -49,6 +59,7 @@
 import { defineComponent, reactive, ref, nextTick } from 'vue'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Plus } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { EnvironmentItem } from '@/interface/environment'
 import { environmentList } from '@/mock/environment'
 import EditDetail from './components/editDetail/index.vue'
@@ -57,7 +68,7 @@ export default defineComponent({
   components: { Plus, EditDetail },
 
   setup() {
-    const list: EnvironmentItem[] = reactive(environmentList)
+    const list: EnvironmentItem[] = reactive([...environmentList])
 
     // 粗略计算运行天数
     const calculationTime = (time: string): Number => {
@@ -90,6 +101,26 @@ export default defineComponent({
         list.splice(index, 1, { ...info })
       }
       detailDrawer.value = false
+      ElMessage.success('Save successful!')
+    }
+
+    // 删除机器
+    const removeEnvironment = (item: EnvironmentItem) => {
+      const index = list.findIndex((i: EnvironmentItem) => i.id === item.id)
+      list.splice(index, 1)
+    }
+
+    // 故障报修
+    const reportForRepair = (item: EnvironmentItem) => {
+      ElMessageBox.prompt('', 'Please describe the fault scenario!', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel'
+        // buttonSize: 'small'
+      }).then(() => {
+        const index = list.findIndex((i: EnvironmentItem) => i.id === item.id)
+        list.splice(index, 1, { ...list[index], state: 'Repair' })
+        ElMessage.success('Operation successful!')
+      })
     }
 
     return {
@@ -99,7 +130,9 @@ export default defineComponent({
       calculationTime,
       showDetail,
       saveEdit,
-      beforeCloseDrawer
+      beforeCloseDrawer,
+      removeEnvironment,
+      reportForRepair
     }
   }
 })
@@ -108,6 +141,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .environ__item {
   padding: 24px;
+  padding-bottom: 15px;
   background-color: #fff;
   border-radius: 6px;
   cursor: pointer;
@@ -147,6 +181,28 @@ export default defineComponent({
       color: #303133;
       font-size: 16px;
       margin-top: 5px;
+    }
+  }
+
+  .environ__opera {
+    border-top: 1px solid #f5f5f5;
+    text-align: right;
+    margin-top: 20px;
+    padding-top: 15px;
+
+    .item__btn {
+      background-color: #fff;
+      display: inline-block;
+      border-radius: 4px;
+      box-sizing: border-box;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 17px;
+      font-size: 12px;
+      font-weight: 500;
+      border: 1px solid #f5f5f5;
+      user-select: none;
+      margin-left: 20px;
     }
   }
 }

@@ -7,7 +7,7 @@
         v-model="machineName"
         placeholder="search name"
       ></el-input>
-      <el-button>
+      <el-button @click="searchUser">
         <el-icon class="search__icon"> <search /></el-icon>Search
       </el-button>
     </el-col>
@@ -25,30 +25,33 @@
       <div class="user__role">Max role</div>
       <div class="opera"></div>
     </div>
-    <div class="team__item" v-for="item in list" :key="item.id">
-      <div class="user__attr">
-        <img :src="item.attar" />
+    <template v-if="list.length">
+      <div class="team__item" v-for="item in list" :key="item.id">
+        <div class="user__attr">
+          <img :src="item.attar" />
+        </div>
+        <div class="user__name">{{ item.name }}</div>
+        <div class="user__email">{{ item.email }}</div>
+        <div class="user__access">
+          by <span>{{ item.granted }}</span>
+        </div>
+        <div class="user__role">
+          <el-select v-model="item.role">
+            <el-option v-for="r in roleList" :key="r" :label="r" :value="r"></el-option>
+          </el-select>
+        </div>
+        <div class="opera">
+          <el-popconfirm @confirm="removeUser(item)" title="Are you sure to delete this?">
+            <template #reference>
+              <el-button class="btn__delete" type="danger" circle
+                ><el-icon class="search__icon"> <delete /></el-icon
+              ></el-button>
+            </template>
+          </el-popconfirm>
+        </div>
       </div>
-      <div class="user__name">{{ item.name }}</div>
-      <div class="user__email">{{ item.email }}</div>
-      <div class="user__access">
-        by <span>{{ item.granted }}</span>
-      </div>
-      <div class="user__role">
-        <el-select v-model="item.role">
-          <el-option v-for="r in roleList" :key="r" :label="r" :value="r"></el-option>
-        </el-select>
-      </div>
-      <div class="opera">
-        <el-popconfirm @confirm="removeUser(item)" title="Are you sure to delete this?">
-          <template #reference>
-            <el-button class="btn__delete" type="danger" circle
-              ><el-icon class="search__icon"> <delete /></el-icon
-            ></el-button>
-          </template>
-        </el-popconfirm>
-      </div>
-    </div>
+    </template>
+    <el-empty description=" " v-else />
   </div>
 
   <el-drawer v-model="detailDrawer" :before-close="beforeCloseDrawer">
@@ -78,6 +81,7 @@ export default defineComponent({
   setup() {
     const machineName = ref('')
     const list: TeamItem[] = reactive([...teamList])
+    const originList: TeamItem[] = reactive([...teamList])
 
     const detailDrawer = ref(false)
     const detailRef = ref()
@@ -100,18 +104,34 @@ export default defineComponent({
     const removeUser = (item: TeamItem) => {
       const index = list.findIndex((i: TeamItem) => i.id === item.id)
       list.splice(index, 1)
+      originList.splice(0, originList.length, ...list)
+    }
+
+    // 搜索用户
+    const searchUser = () => {
+      const key = machineName.value
+      const reg = new RegExp(key, 'i')
+
+      if (key === '') {
+        list.splice(0, list.length, ...originList)
+      } else {
+        const temp = originList.filter((i: TeamItem) => reg.test(i.name))
+        list.splice(0, list.length, ...temp)
+      }
     }
 
     return {
       machineName,
       list,
+      originList,
       detailDrawer,
       detailRef,
       roleList,
       showInvite,
       saveEdit,
       removeUser,
-      beforeCloseDrawer
+      beforeCloseDrawer,
+      searchUser
     }
   }
 })
@@ -138,7 +158,7 @@ export default defineComponent({
   border-radius: 6px;
   cursor: pointer;
   margin-top: 18px;
-  min-height: 400px;
+  min-height: 430px;
 
   .team__item {
     border-bottom: 1px solid #f5f5f5;
