@@ -1,52 +1,57 @@
 <template>
-  <el-row :gutter="24" class="sear__box">
-    <el-col :span="12">
-      <el-input
-        class="search__input"
-        clearable
-        v-model="machineName"
-        placeholder="search name"
-      ></el-input>
-      <el-button>
-        <el-icon class="search__icon"> <search /></el-icon>Search
-      </el-button>
-    </el-col>
-    <el-col :span="12" style="text-align: right">
-      <el-button @click="showDetail()">
-        <el-icon class="search__icon"> <plus /></el-icon>Add New
-      </el-button>
-    </el-col>
-  </el-row>
+  <div class="my__account--box">
+    <div class="page__header">My Account</div>
 
-  <div class="environ__item" v-for="item in list" :key="item.id" @click="showDetail(item)">
-    <el-row :gutter="24">
-      <el-col :span="10">
-        <div class="title__txt">{{ item.title }}</div>
-        <span class="item__tags">{{ item.core }}</span>
-        <span class="item__tags">{{ item.ram }}</span>
-        <span class="item__tags">{{ item.dueTo }}</span>
-        <span class="item__tags">{{ item.center }}</span>
+    <el-row :gutter="24" class="info__line phone__line">
+      <el-col :span="4" class="flex__center"><span class="label__txt">Photo</span></el-col>
+      <el-col :span="12">
+        <img class="info__photo" :src="account.attar" />
       </el-col>
-      <el-col :span="14" style="text-align: right">
-        <div class="count__item">
-          <div class="count">{{ item.owner }}</div>
-          <div class="tips">owner</div>
-        </div>
-        <div class="count__item">
-          <div class="count">{{ item.state }}</div>
-          <div class="tips">state</div>
-        </div>
-        <div class="count__item">
-          <div class="count">{{ calculationTime(item.startAt) }}d</div>
-          <div class="tips">run time</div>
-        </div>
+      <el-col :span="8" class="flex__center" style="justify-content: end">
+        <el-upload
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :show-file-list="false"
+          :on-success="handleAvatarSuccess"
+          :before-upload="beforeAvatarUpload"
+        >
+          <el-icon class="info__icon"><edit-pen /></el-icon>
+        </el-upload>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="24" class="info__line">
+      <el-col :span="4"><span class="label__txt">Name</span></el-col>
+      <el-col :span="12">
+        <span class="info__txt">{{ account.name }}</span>
+      </el-col>
+      <el-col :span="8" style="text-align: right">
+        <el-icon class="info__icon" @click="showDetail()"><edit-pen /></el-icon>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="24" class="info__line">
+      <el-col :span="4"><span class="label__txt">Email</span></el-col>
+      <el-col :span="12">
+        <span class="info__txt">{{ account.email }}</span>
+      </el-col>
+      <el-col :span="8" style="text-align: right">
+        <el-icon class="info__icon" @click="showDetail()"><edit-pen /></el-icon>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="24" class="info__line">
+      <el-col :span="4"></el-col>
+      <el-col :span="12">
+        <el-button type="info" class="reseat__password" @click="resetPassword"
+          >Reset Password</el-button
+        >
       </el-col>
     </el-row>
   </div>
 
-  <el-drawer v-model="detailDrawer" :before-close="beforeCloseDrawer">
+  <el-drawer v-model="detailDrawer">
     <template #title>
-      <div class="edit__drawer--title">Environment</div>
+      <div class="edit__drawer--title">My Account</div>
     </template>
     <template #footer>
       <el-button @click="saveEdit">Save</el-button>
@@ -56,123 +61,121 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, nextTick } from 'vue'
+import { defineComponent, ref, nextTick } from 'vue'
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Search, Plus } from '@element-plus/icons-vue'
-import { EnvironmentItem } from '@/interface/environment'
-import { environmentList } from '@/mock/environment'
+import { EditPen } from '@element-plus/icons-vue'
+import type { UploadProps } from 'element-plus'
+import { ElMessage } from 'element-plus'
+import { TeamItem } from '@/interface/team'
+import { myAccount } from '@/mock/myAccount'
 import EditDetail from './components/editDetail/index.vue'
 
 export default defineComponent({
-  components: { Search, Plus, EditDetail },
+  components: { EditPen, EditDetail },
 
   setup() {
-    const machineName = ref('')
-    const list: EnvironmentItem[] = reactive(environmentList)
-
-    // 粗略计算运行天数
-    const calculationTime = (time: string): Number => {
-      const value = Date.now() - new Date(time).getTime()
-      return Math.floor(value / (24 * 3600 * 1000))
-    }
+    const account = ref<TeamItem>(Object.assign({} as TeamItem, myAccount))
 
     const detailDrawer = ref(false)
     const detailRef = ref()
-    // 关闭编辑弹窗前重置form表单
-    const beforeCloseDrawer = (done: any): void => {
-      detailRef.value.resetForm()
-      done()
-    }
     // 展开编辑
-    const showDetail = async (item: EnvironmentItem | undefined) => {
+    const showDetail = async () => {
       detailDrawer.value = true
       await nextTick()
-      if (item && item.id) detailRef.value.resetForm(item)
-      else detailRef.value.resetForm()
+      detailRef.value.resetForm(account.value)
     }
     // save
     const saveEdit = (): void => {
-      const info: EnvironmentItem = detailRef.value.form
-      if (!info.id) {
-        info.id = list.length + 1
-        list.unshift(info)
-      } else {
-        const index = list.findIndex((i: EnvironmentItem) => i.id === info.id)
-        list.splice(index, 1, { ...info })
-      }
+      const info: TeamItem = detailRef.value.form
+      account.value = { ...info }
       detailDrawer.value = false
+      ElMessage.success('Save successful!')
+    }
+    // 照片上传前类型校验
+    const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
+      if (rawFile.type !== 'image/png') {
+        ElMessage.error('Avatar picture must be PNG format!')
+        return false
+      }
+      if (rawFile.size / 1024 / 1024 > 2) {
+        ElMessage.error('Avatar picture size can not exceed 2MB!')
+        return false
+      }
+      return true
+    }
+    // 上传头像成功
+    const handleAvatarSuccess: UploadProps['onSuccess'] = (response, uploadFile) => {
+      account.value.attar = URL.createObjectURL(uploadFile.raw!)
+      ElMessage.success('Save successful!')
+    }
+
+    // 重置密码
+    const resetPassword = () => {
+      ElMessage.info('The auto0 password reset function is being enabled!')
     }
 
     return {
-      machineName,
-      list,
+      account,
       detailDrawer,
       detailRef,
-      calculationTime,
       showDetail,
       saveEdit,
-      beforeCloseDrawer
+      beforeAvatarUpload,
+      handleAvatarSuccess,
+      resetPassword
     }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-.sear__box {
-  margin-bottom: 30px;
-
-  .search__input {
-    display: inline-block;
-    width: 200px;
-    margin-right: 10px;
-  }
-
-  .search__icon {
-    margin-right: 4px;
-  }
-}
-
-.environ__item {
+.my__account--box {
   padding: 24px;
   background-color: #fff;
   border-radius: 6px;
-  cursor: pointer;
-  margin-top: 18px;
 
-  .title__txt {
-    font-size: 18px;
+  .page__header {
+    padding-top: 10px;
+    font-size: 20px;
     font-weight: 500;
-    margin-bottom: 9px;
+    margin-bottom: 50px;
   }
 
-  .item__tags {
-    display: inline-block;
-    border-radius: 3px;
-    height: 24px;
-    line-height: 24px;
-    box-sizing: border-box;
-    padding: 0 7px;
-    margin-right: 8px;
-    font-size: 12px;
-    font-weight: 500;
-    background-color: #eff2f6;
-  }
+  .info__line {
+    padding: 30px 10px;
+    border-top: 1px solid #f5f5f5;
 
-  .count__item {
-    display: inline-block;
-    margin-left: 22px;
-    text-align: center;
-
-    .count {
-      font-size: 22px;
-      color: #101d37;
-      font-weight: 500;
+    &.phone__line {
+      padding: 20px 10px;
     }
 
-    .tips {
-      color: #303133;
-      font-size: 16px;
-      margin-top: 5px;
+    .flex__center {
+      display: flex;
+      align-items: center;
+    }
+
+    .info__photo {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    .label__txt {
+      color: #8392a7;
+    }
+
+    .info__txt {
+    }
+
+    .info__icon {
+      cursor: pointer;
+    }
+
+    .reseat__password {
+      border-color: #dedfe0;
+      background-color: #dedfe0;
+      color: #666;
     }
   }
 }

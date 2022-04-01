@@ -6,8 +6,8 @@
           <img src="https://qiniu-image.qtshe.com/account_default_5.7.png" alt="" />
         </div>
         <div class="text__info">
-          <span>表弟最帅</span>
-          <span>未创建团队</span>
+          <span>Bidao Di</span>
+          <span>Test Team</span>
         </div>
         <div class="img__arrow">
           <img src="https://qiniu-image.qtshe.com/pcweb/png/arrow_down.png" alt="" />
@@ -18,9 +18,9 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item>
-          <div class="drop__item--box">
+          <div class="drop__item--box" @click="$router.push('/myAccount/index')">
             <img class="drop__item--icon" src="https://qiniu-image.qtshe.com/base_info.png" />
-            <div class="drop__item--text">Personal</div>
+            <div class="drop__item--text">My Account</div>
           </div>
         </el-dropdown-item>
         <el-dropdown-item @click="logout">

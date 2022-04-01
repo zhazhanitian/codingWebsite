@@ -13,11 +13,11 @@
           :class="['menu__btn', menuType === 2 && 'active']"
           >Team</span
         >
-        <span
+        <!-- <span
           @click="$router.push('/myAccount/index')"
           :class="['menu__btn', menuType === 3 && 'active']"
           >My Account</span
-        >
+        > -->
         <span
           @click="$router.push('/billing/index')"
           :class="['menu__btn', menuType === 4 && 'active']"

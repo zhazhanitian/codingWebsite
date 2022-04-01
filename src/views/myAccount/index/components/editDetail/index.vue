@@ -1,58 +1,31 @@
 <template>
   <el-form :model="form" label-width="120px" label-position="top">
-    <el-form-item label="Name" prop="title" class="form__item">
-      <el-input v-model.trim="form.title" maxlength="15" />
+    <el-form-item label="Name" prop="name" class="form__item">
+      <el-input v-model.trim="form.name" maxlength="15" />
     </el-form-item>
-    <el-form-item label="Core CPU" prop="core" class="form__item">
-      <el-select v-model="form.core" class="form__select">
-        <el-option v-for="item in coreCpuList" :key="item" :label="item" :value="item" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="ARM" prop="ram" class="form__item">
-      <el-select v-model="form.ram" class="form__select">
-        <el-option v-for="item in ramList" :key="item" :label="item" :value="item" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="Band Width" prop="dueTo" class="form__item">
-      <el-select v-model="form.dueTo" class="form__select">
-        <el-option v-for="item in dueToList" :key="item" :label="item" :value="item" />
-      </el-select>
-    </el-form-item>
-    <el-form-item label="System" prop="center" class="form__item">
-      <el-select v-model="form.center" class="form__select">
-        <el-option v-for="item in centerList" :key="item" :label="item" :value="item" />
-      </el-select>
+    <el-form-item label="Email" prop="email" class="form__item">
+      <el-input v-model.trim="form.email" maxlength="40" />
     </el-form-item>
   </el-form>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { EnvironmentItem } from '@/interface/environment'
-import {
-  coreCpuList,
-  ramList,
-  dueToList,
-  centerList,
-  defaultEnvironmentItem
-} from '@/config/environment'
+import { TeamItem } from '@/interface/team'
+import { myAccount } from '@/mock/myAccount'
 
 export default defineComponent({
-  name: 'EnvironmentEdit',
+  name: 'MyAccountEdit',
 
   setup() {
-    const form = ref<EnvironmentItem>(Object.assign({} as EnvironmentItem, defaultEnvironmentItem))
+    const form = ref<TeamItem>(Object.assign({} as TeamItem, myAccount))
 
-    const resetForm = (info: EnvironmentItem | undefined) => {
-      form.value = { ...(info || defaultEnvironmentItem) }
+    const resetForm = (info: TeamItem | undefined) => {
+      form.value = { ...(info || myAccount) }
     }
 
     return {
       form,
-      coreCpuList,
-      ramList,
-      dueToList,
-      centerList,
       resetForm
     }
   }
